@@ -7,6 +7,15 @@ import java.util.List;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
+    // Filters: rules that SELECT which tasks we care about
+    static TaskFilter highPriority = t -> t.getPriority() >= 4;
+    static TaskFilter mediumPriority = t -> t.getPriority() == 3;
+    static TaskFilter lowPriority = t -> t.getPriority() <= 2;
+    static TaskFilter completed = t -> t.isCompleted();
+    static TaskFilter notCompleted = t -> !t.isCompleted();
+    static TaskFilter lowAndCompleted = lowPriority.and(completed);
+    static TaskAction markAsCompleted = todo -> todo.setCompleted(true);
+
     static void main() {
 
         List<Todo> todos = new ArrayList<>();
@@ -23,6 +32,10 @@ public class Main {
         todos.add(new Todo("Improve UI layout", 3, false));
         todos.add(new Todo("Release hotfix", 5, true));
 
+        /*
+        for (Todo todo : todos) {
+            IO.println(todo);
+        }
 
         List<Todo> highPriorityTasks = new ArrayList<>();
         for (Todo todo : todos) {
@@ -41,6 +54,45 @@ public class Main {
             }
         }
         IO.println("Without lambda: completed tasks: " + completedTasks);
+
+         */
+
+
+
+        // Filtered results
+        IO.println("\n--- Filter results (no changes) ---");
+        IO.println("Low priority tasks: " + findTasks(todos, lowPriority));
+        IO.println("Completed tasks: " + findTasks(todos, completed));
+        IO.println("Low priority & Completed tasks: " + findTasks(todos, lowAndCompleted));
+
+
+        // Filter and Update results
+        IO.println("\n--- Filter and Update results ---");
+        IO.println("Make Low priority tasks completed: " + applyToMatchingTasks(todos, lowPriority, markAsCompleted));
+
+
+    }
+
+    public static List<Todo> findTasks(List<Todo> todos, TaskFilter filter) {
+        List<Todo> result = new ArrayList<>();
+        for (Todo todo : todos) {
+            if (filter.matches(todo)) {
+                result.add(todo);
+            }
+        }
+        return result;
+    }
+
+
+    public static List<Todo> applyToMatchingTasks(List<Todo> todos, TaskFilter filter, TaskAction action) {
+        List<Todo> updated = new ArrayList<>();
+        for (Todo todo : todos) {
+            if (filter.matches(todo)) {
+                action.run(todo);
+                updated.add(todo);
+            }
+        }
+        return updated;
     }
 
 }
