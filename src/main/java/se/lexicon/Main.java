@@ -33,7 +33,7 @@ public class Main {
         IO.println("\n--- Without lambda: high priority tasks ---");
         IO.println(highPriorityTasks);
 
-        
+
         List<Todo> completedTasks = new ArrayList<>();
         for (Todo todo : todos) {
             if (todo.isCompleted()) {
